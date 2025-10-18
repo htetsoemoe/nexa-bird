@@ -34,6 +34,11 @@ export class Ground extends Component {
 
     public gameSpeed: number = 50;
 
+    /**
+     onLoad()
+        Called once when the node and all its components are loaded.
+        Use it for initialization, like setting up variables or event listeners.
+     */
     onLoad() {
         this.startUp();
     }
@@ -46,8 +51,8 @@ export class Ground extends Component {
 
         // Set temporary location for each ground node
         this.tempStartLocation1.x = 0;
-        this.tempStartLocation2.x = this.groundWidth1;
-        this.tempStartLocation3.x = this.groundWidth1 + this.groundWidth2;
+        this.tempStartLocation2.x = this.groundWidth1; // 320
+        this.tempStartLocation3.x = this.groundWidth1 + this.groundWidth2; // 640
 
         
         // Set ground node position 
@@ -57,6 +62,11 @@ export class Ground extends Component {
     }
 
 
+    /**
+     update(deltatime)
+        Called every frame (like a game loop)
+        Use it for per-frame logic such as movement, physics, or checking inputs.
+     */
     update(deltaTime: number) {
         // Set temporary locations
         this.tempStartLocation1 = this.ground1.position;
@@ -72,16 +82,16 @@ export class Ground extends Component {
         const scene = director.getScene(); // returns current logic scene
         const canvas = scene.getComponentInChildren(Canvas);
 
-        // if tempStartLocation1.x <= -320, move tempStartLocation1.x to 640 (width of scene)
+        // if tempStartLocation1.x <= -1, move tempStartLocation1.x to 640 (width of scene)
         if (this.tempStartLocation1.x <= (0 - this.groundWidth1)) {
             this.tempStartLocation1.x = canvas.getComponent(UITransform).width;
         }
 
-        if (this.tempStartLocation2.x <= (0 - this.groundWidth1)) {
+        if (this.tempStartLocation2.x <= (0 - this.groundWidth2)) {
             this.tempStartLocation2.x = canvas.getComponent(UITransform).width;
         }
 
-        if (this.tempStartLocation3.x <= (0 - this.groundWidth1)) {
+        if (this.tempStartLocation3.x <= (0 - this.groundWidth3)) {
             this.tempStartLocation3.x = canvas.getComponent(UITransform).width;
         }
 
