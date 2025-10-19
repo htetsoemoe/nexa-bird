@@ -1,6 +1,8 @@
 import { _decorator, Canvas, Component, director, Node, UITransform, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
+import { GameCtrl } from './GameCtrl';
+
 @ccclass('Ground')
 export class Ground extends Component {
     
@@ -32,7 +34,9 @@ export class Ground extends Component {
     public tempStartLocation2 = new Vec3;
     public tempStartLocation3 = new Vec3;
 
-    public gameSpeed: number = 50;
+    // Using gameCtrlSpeed 
+    public gameCtrlSpeed = new GameCtrl;
+    public gameSpeed: number;
 
     /**
      onLoad()
@@ -68,6 +72,9 @@ export class Ground extends Component {
         Use it for per-frame logic such as movement, physics, or checking inputs.
      */
     update(deltaTime: number) {
+        // Set gameSpeed using GameCtrl.speed
+        this.gameSpeed = this.gameCtrlSpeed.speed;
+
         // Set temporary locations
         this.tempStartLocation1 = this.ground1.position;
         this.tempStartLocation2 = this.ground2.position;
@@ -82,15 +89,17 @@ export class Ground extends Component {
         const scene = director.getScene(); // returns current logic scene
         const canvas = scene.getComponentInChildren(Canvas);
 
-        // if tempStartLocation1.x <= -1, move tempStartLocation1.x to 640 (width of scene)
+        // if tempStartLocation1.x <= -320, move tempStartLocation1.x to 640 (width of scene)
         if (this.tempStartLocation1.x <= (0 - this.groundWidth1)) {
             this.tempStartLocation1.x = canvas.getComponent(UITransform).width;
         }
 
+        // if tempStartLocation2.x <= -320, move tempStartLocation2.x to 640 (width of scene)
         if (this.tempStartLocation2.x <= (0 - this.groundWidth2)) {
             this.tempStartLocation2.x = canvas.getComponent(UITransform).width;
         }
 
+        // if tempStartLocation3.x <= -320, move tempStartLocation3.x to 640 (width of scene)
         if (this.tempStartLocation3.x <= (0 - this.groundWidth3)) {
             this.tempStartLocation3.x = canvas.getComponent(UITransform).width;
         }
