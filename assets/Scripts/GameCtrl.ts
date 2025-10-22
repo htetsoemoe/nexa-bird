@@ -13,6 +13,7 @@ const {ccclass, property} = _decorator;
 
 import { Ground } from "./Ground";
 import { Results } from "./Results";
+import { Bird } from "./Bird";
 
 @ccclass('GameCtrl')
 export class GameCtrl extends Component {
@@ -28,6 +29,11 @@ export class GameCtrl extends Component {
         tooltip: "results is here"
     })
     public results: Results;
+
+    @property({
+        type: Bird
+    })
+    public bird: Bird;
 
     @property({
         type: CCInteger
@@ -57,6 +63,11 @@ export class GameCtrl extends Component {
         // Register a callback of a specific input event type.
         // input.on(eventType, callback, target), target means current Input.EventType
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+
+        // When user click, the bird need to fly
+        this.node.on(Node.EventType.TOUCH_START, () => {
+            this.bird.fly();
+        })
     }
 
     // TESTING METHOD: DELETE ME IN FINAL VERSION
@@ -68,8 +79,9 @@ export class GameCtrl extends Component {
             case KeyCode.KEY_P:
                 this.results.addScore();
             break;
-            case KeyCode.KEY_Q:
+            case KeyCode.KEY_Q: // if game quit, resetGame() and resetBird()
                 this.resetGame();
+                this.bird.resetBird();
         }
     }
 
