@@ -8,6 +8,8 @@ import {
     EventKeyboard, 
     KeyCode,
     director,
+    EventTouch,
+    EventMouse,
 } from "cc";
 const {ccclass, property} = _decorator;
 
@@ -69,6 +71,27 @@ export class GameCtrl extends Component {
             this.bird.fly();
         })
     }
+
+    /**
+      This method is using for mouse tracking 
+
+    initListener() {
+        input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+
+        // --- Mouse Events (for desktop) ---
+        // --- Mouse (Desktop) ---
+        this.node.on(Node.EventType.MOUSE_DOWN, (event: EventMouse) => {
+            const clickY = event.getLocationY();
+            const birdY = this.bird.node.getWorldPosition().y;
+
+            if (clickY > birdY) {
+                this.bird.fly();
+            } else {
+                this.bird.down();
+            }
+        });
+    }
+     */
 
     // TESTING METHOD: DELETE ME IN FINAL VERSION
     onKeyDown(event: EventKeyboard) {
