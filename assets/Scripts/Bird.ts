@@ -7,13 +7,13 @@ export class Bird extends Component {
         type: CCFloat,
         tooltip: "How high can they fly"
     })
-    public jumpHeight: number = 3.5;
+    public jumpHeight: number = 2.5; // original: 3.5
 
     @property({
         type: CCFloat,
         tooltip: "How long can they fly"
     })
-    public jumpDuration: number = 3.5;
+    public jumpDuration: number = 2.5; // original: 3.5
 
     public birdAnimation: Animation;
     public birdLocation: Vec3;
