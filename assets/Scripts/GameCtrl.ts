@@ -10,6 +10,9 @@ import {
     director,
     EventTouch,
     EventMouse,
+    Contact2DType,
+    Collider2D,
+    IPhysics2DContact,
 } from "cc";
 const {ccclass, property} = _decorator;
 
@@ -53,6 +56,8 @@ export class GameCtrl extends Component {
     })
     public pipeSpeed: number = 200;
 
+    public isOver: boolean; 
+
     // When lode the game
     /**
      When attaching to an active node or its node first activated. 
@@ -63,6 +68,7 @@ export class GameCtrl extends Component {
     onLoad() {
         this.initListener();
         this.results.resetScore();
+        this.isOver = true;
         director.pause();
     }
 
@@ -70,11 +76,21 @@ export class GameCtrl extends Component {
     initListener() {
         // Register a callback of a specific input event type.
         // input.on(eventType, callback, target), target means current Input.EventType
-        input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+
+        // In part 8: Hit Detection, don't use anymore
+        // input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
 
         // When user click, the bird need to fly
         this.node.on(Node.EventType.TOUCH_START, () => {
-            this.bird.fly();
+            if (this.isOver == true) {
+                this.resetGame();
+                this.bird.resetBird();
+                this.startGame();
+            }
+
+            if (this.isOver == false) {
+                this.bird.fly();
+            }
         })
     }
 
@@ -100,19 +116,20 @@ export class GameCtrl extends Component {
      */
 
     // TESTING METHOD: DELETE ME IN FINAL VERSION
-    onKeyDown(event: EventKeyboard) {
-        switch(event.keyCode) {
-            case KeyCode.KEY_A:
-                this.gameOver();
-            break;
-            case KeyCode.KEY_P:
-                this.results.addScore();
-            break;
-            case KeyCode.KEY_Q: // if game quit, resetGame() and resetBird()
-                this.resetGame();
-                this.bird.resetBird();
-        }
-    }
+    // In Part 8: Hit Detection ==> Need to comment out, don't use no more
+    // onKeyDown(event: EventKeyboard) {
+    //     switch(event.keyCode) {
+    //         case KeyCode.KEY_A:
+    //             this.gameOver();
+    //         break;
+    //         case KeyCode.KEY_P:
+    //             this.results.addScore();
+    //         break;
+    //         case KeyCode.KEY_Q: // if game quit, resetGame() and resetBird()
+    //             this.resetGame();
+    //             this.bird.resetBird();
+    //     }
+    // }
 
     startGame() {
         this.results.hideResults();
@@ -121,12 +138,14 @@ export class GameCtrl extends Component {
 
     gameOver() {
         this.results.showResults();
+        this.isOver = true;
         director.pause();
     }
 
     resetGame() {
         this.results.resetScore(); // called updateScore(0) and hideResults()
         this.pipeQueue.reset(); // reset the pipes 
+        this.isOver = false;
         this.startGame();
     }
 
@@ -136,5 +155,38 @@ export class GameCtrl extends Component {
 
     createPipe() {
         this.pipeQueue.addPool();
+    }
+
+    // Collider methods
+    contactGroundPipe() {
+        let collider = this.bird.getComponent(Collider2D);
+        if (collider) {
+            collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+        }
+    }
+
+    onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
+        this.bird.hitSomething = true;
+    }
+
+    birdStruck() {
+        this.contactGroundPipe()
+
+        if (this.bird.hitSomething == true) {
+            this.gameOver();
+        }
+    }
+
+    /*
+    Update is called every frame, if the Component is enabled. 
+    This is a lifecycle method. It may not be implemented in the super class. 
+    You can only call its super class method inside it. It should not be called manually elsewhere.
+
+    @param dt — the delta time in seconds it took to complete the last frame
+    */
+    update() {
+        if (this.isOver == false) {
+            this.birdStruck();
+        }
     }
 }

@@ -7,16 +7,19 @@ export class Bird extends Component {
         type: CCFloat,
         tooltip: "How high can they fly"
     })
-    public jumpHeight: number = 2.5; // original: 3.5
+    public jumpHeight: number = 2; // original: 3.5
 
     @property({
         type: CCFloat,
         tooltip: "How long can they fly"
     })
-    public jumpDuration: number = 2.5; // original: 3.5
+    public jumpDuration: number = 2; // original: 3.5
 
     public birdAnimation: Animation;
     public birdLocation: Vec3;
+
+    // Use in onBeginContact() of GameCtrl.ts
+    public hitSomething: boolean;
 
     onLoad() {
         this.resetBird();
@@ -26,6 +29,7 @@ export class Bird extends Component {
     resetBird() {
         this.birdLocation = new Vec3(0, 0, 0);
         this.node.setPosition(this.birdLocation);
+        this.hitSomething = false;
     }
 
     fly() {
