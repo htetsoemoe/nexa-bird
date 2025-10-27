@@ -20,6 +20,7 @@ import { Ground } from "./Ground";
 import { Results } from "./Results";
 import { Bird } from "./Bird";
 import { PipePool } from "./PipePool";
+import { BirdAudio } from "./BirdAudio";
 
 @ccclass('GameCtrl')
 export class GameCtrl extends Component {
@@ -45,6 +46,11 @@ export class GameCtrl extends Component {
         type: PipePool
     })
     public pipeQueue: PipePool;
+    
+    @property({
+        type: BirdAudio
+    })
+    public clip: BirdAudio;
 
     @property({
         type: CCInteger
@@ -65,6 +71,8 @@ export class GameCtrl extends Component {
      of scripts. This is a lifecycle method. It may not be implemented in the super class. 
      You can only call its super class method inside it. It should not be called manually elsewhere.
      */
+    // Parent nodes' onLoad() run before child nodes.
+    // Parent nodes's onLoad() --> always called before their children's.
     onLoad() {
         this.initListener();
         this.results.resetScore();
@@ -90,6 +98,7 @@ export class GameCtrl extends Component {
 
             if (this.isOver == false) {
                 this.bird.fly();
+                this.clip.onAudioQueue(0); // plays `swoosh.wav`
             }
         })
     }
@@ -139,6 +148,7 @@ export class GameCtrl extends Component {
     gameOver() {
         this.results.showResults();
         this.isOver = true;
+        this.clip.onAudioQueue(3); // plays `die.wav`
         director.pause();
     }
 
@@ -151,6 +161,7 @@ export class GameCtrl extends Component {
 
     passPipe() {
         this.results.addScore();
+        this.clip.onAudioQueue(1); // plays `point.wav`
     }
 
     createPipe() {
@@ -159,14 +170,15 @@ export class GameCtrl extends Component {
 
     // Collider methods
     contactGroundPipe() {
-        let collider = this.bird.getComponent(Collider2D);
-        if (collider) {
+        let collider = this.bird.getComponent(Collider2D); // checks Bird collides pipes
+        if (collider) { // if bird collides a collider, set `bird.hitSomething = true`
             collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
         }
     }
 
     onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
         this.bird.hitSomething = true;
+        this.clip.onAudioQueue(2); // plays `hit.wav`
     }
 
     birdStruck() {
@@ -185,8 +197,8 @@ export class GameCtrl extends Component {
     @param dt — the delta time in seconds it took to complete the last frame
     */
     update() {
-        if (this.isOver == false) {
-            this.birdStruck();
+        if (this.isOver == false) { // if game is not over
+            this.birdStruck(); // consistently checks bird hits something, bird hits something call gameOver()
         }
     }
 }
